@@ -1,0 +1,10 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "C:/Program Files/AutoHotkey/Compiler/Ahk2Exe.exe",
+    "isShellCommand": true,
+    "args": ["/in adp-clockin-assist.ahk /out ./bin/adp-clockin-assist.exe /icon adp.ico"],
+    "showOutput": "always",
+    "isBuildCommand": true
+}
