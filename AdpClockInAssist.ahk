@@ -6,9 +6,11 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+FileCreateDir, %A_AppData%\ADPClockInAssist
 
 InitI18n()
 CreateSysTrayMenu()
+
 return
 
 
@@ -27,31 +29,30 @@ InitI18n() {
 CreateSysTrayMenu() {
 	Menu, Tray, NoStandard
 	Menu, Tray, Add, % I18n("clockin"), OnClockIn
+	Menu, Tray, Add
 	Menu, Tray, Add, % I18n("quit"), OnQuit
-	Menu, Tray, Tip, Test`Test2
+
+	UpdateTrayIconTooltip()
 }
 
 OnQuit() {
 	ExitApp
 }
 
-
-;TrayTip, Timed TrayTip, Pointage réussi!
-;SetTimer, RemoveTrayTip, 3000
-;return
-
-;RemoveTrayTip:
-;SetTimer, RemoveTrayTip, Off
-;TrayTip
-
 OnClockIn() {
-	ie := ComObjCreate("InternetExplorer.Application")  ;// Create an IE object
-	ie.Visible := true                                  ;// Make the IE object visible
+	TrayTip, % "ADP Clock In Assist" , % I18n("clockin.success") 
+	return
+
+	ie := ComObjCreate("InternetExplorer.Application")
+	ie.Visible := false
 
 	ComObjConnect(ie)
 	ie.Navigate("https://pointage.adp.com/")
 	while ie.ReadyState <> 4
 		continue
+    
+	; Example of running JS on current page
+	; ie.document.parentWindow.execScript("document.getElementById('login').value = 'lol'") 
 		
 	Send {Enter} ;// Assumes login/pass are saved in IE
 
@@ -98,6 +99,39 @@ OnClockIn() {
 		Sleep, 10
 
 	ie.Quit()
+
+	UpdateHistoryOnDisk()
+}
+
+UpdateHistoryOnDisk() {
+	; Deleting content of history.txt if the date changed
+	historyDate = ""
+	FormatTime, currentDate,, yyyy.MM.dd
+	FileReadLine, historyDate, %A_AppData%\ADPClockInAssist\history.txt, 1
+
+	if (historyDate != currentDate) {
+		FileDelete, %A_AppData%\ADPClockInAssist\history.txt
+		FileAppend, % currentDate . "`n", %A_AppData%\ADPClockInAssist\history.txt
+	}
+	
+	FormatTime, currentTime,, HH:mm
+	FileAppend, % currentTime . "`n", %A_AppData%\ADPClockInAssist\history.txt
+
+	UpdateTrayIconTooltip()
+}
+
+UpdateTrayIconTooltip() {
+	history = 
+	timeSepatator = :
+	Loop, read, %A_AppData%\ADPClockInAssist\history.txt 
+	{
+    	if (InStr(A_LoopReadLine, timeSepatator))
+		{
+			history .= A_LoopReadLine "`n"
+		}
+	}
+
+	Menu, Tray, Tip, % history
 }
 
 OnError() {
