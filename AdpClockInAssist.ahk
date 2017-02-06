@@ -40,9 +40,6 @@ OnQuit() {
 }
 
 OnClockIn() {
-	TrayTip, % "ADP Clock In Assist" , % I18n("clockin.success") 
-	return
-
 	ie := ComObjCreate("InternetExplorer.Application")
 	ie.Visible := false
 
@@ -61,13 +58,13 @@ OnClockIn() {
 
 	try 
 	{
-		ie.document.getElementsByClassName("bouton_bg")[0].children[0].click()
+		ie.document.parentWindow.execScript("soumettre('POI_PRES')") 
 	} 
 	catch e 
 	{
 		Sleep, 500
 		try {
-			ie.document.getElementsByClassName("bouton_bg")[0].children[0].click()
+		ie.document.parentWindow.execScript("soumettre('POI_PRES')") 
 		}
 		catch e
 		{
@@ -80,14 +77,14 @@ OnClockIn() {
 
 	try 
 	{
-		ie.document.getElementsByClassName("bouton")[0].click()
+		ie.document.parentWindow.execScript("soumettre('ENR_PRES')") 
 	} 
 	catch e 
 	{
 		Sleep, 500
 		try 
 		{
-			ie.document.getElementsByClassName("bouton")[0].click()
+			ie.document.parentWindow.execScript("soumettre('ENR_PRES')") 
 		} 
 		catch e 
 		{
@@ -99,6 +96,8 @@ OnClockIn() {
 		Sleep, 10
 
 	ie.Quit()
+
+	TrayTip, % "ADP Clock In Assist" , % I18n("clockin.success") 
 
 	UpdateHistoryOnDisk()
 }
@@ -136,5 +135,4 @@ UpdateTrayIconTooltip() {
 
 OnError() {
 	MsgBox, Impossible de pointer. Mise à jour du script probablement nécessaire.`rContinuez votre pointage manuellement.
-	ExitApp
 }
