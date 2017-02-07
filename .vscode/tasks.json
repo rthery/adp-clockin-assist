@@ -8,13 +8,13 @@
             "command": "C:/Program Files/AutoHotkey/Compiler/Ahk2Exe.exe",
             "isShellCommand": true,
             "args": [
-                "/in AdpClockInAssist.ahk /out ./bin/AdpClockInAssist.exe /icon app.ico"
+                "/in AdpClockInAssist.ahk /out AdpClockInAssist.exe /icon app.ico"
             ],
             "isBuildCommand": true
         },
         {
             "taskName": "start",
-            "command": "./bin/AdpClockInAssist.exe"
+            "command": "AdpClockInAssist.exe"
         }
     ]
 }
